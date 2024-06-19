@@ -58,7 +58,7 @@ def vectorize_scale_combine_calculate(products):
     return features_matrix, similarity_matrix
 
 # Function to create and train model
-def create_and_train_model(features_matrix, labels, num_epochs=100, batch_size=64, model_save_path):
+def create_and_train_model(features_matrix, labels, num_epochs=100, batch_size=64, model_save_path='model2.h5'):
     model = tf.keras.Sequential([
         tf.keras.layers.Dense(256, activation='relu', input_shape=(features_matrix.shape[1],)),
         tf.keras.layers.Dropout(0.2),
