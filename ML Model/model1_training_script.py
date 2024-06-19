@@ -52,9 +52,9 @@ def preprocess_product_data(df_product):
 # Function to preprocess user data
 def preprocess_user_data(df_user, feature_columns):
     # Convert text to lowercase and split categorical preferences into lists
-    df_user['category_preference'] = df_user['category_preference'].apply(lambda x: x.lower().split(', '))
-    df_user['color_preference'] = df_user['color_preference'].apply(lambda x: x.lower().split(', '))
-    df_user['size_preference'] = df_user['size_preference'].apply(lambda x: x.lower().split(', '))
+    df_user['category_preference'] = df_user['category_preference'].apply(lambda x: x.lower().split(', ') if isinstance(x, str) else [])
+    df_user['color_preference'] = df_user['color_preference'].apply(lambda x: x.lower().split(', ') if isinstance(x, str) else [])
+    df_user['size_preference'] = df_user['size_preference'].apply(lambda x: x.lower().split(', ') if isinstance(x, str) else [])
 
     # Initialize and apply MultiLabelBinarizer
     mlb_user = MultiLabelBinarizer()
@@ -75,7 +75,7 @@ def preprocess_user_data(df_user, feature_columns):
     df_user = df_user.join(category_preference_df).join(color_preference_df).join(size_preference_df)
 
     # Drop unnecessary columns
-    df_user.drop(columns=['pref_id', 'category_preference', 'color_preference', 'size_preference', 'count_num_rating_user', 'avg_rating_user'], inplace=True)
+    df_user.drop(columns=['category_preference', 'color_preference', 'size_preference', 'count_num_rating_user', 'avg_rating_user'], inplace=True)
 
     # Ensure all feature columns in df_user match those in df_product
     for column in feature_columns:
