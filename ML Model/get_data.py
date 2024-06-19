@@ -28,9 +28,9 @@ def main():
     # URLs for the product and user data
     header = {"Authorization": "Sudah izin pada Wildan dan Yoga"}
 
-    product_url = 'http://34.101.239.167/product'
-    user_url = 'http://34.101.239.167/pref'
-    interaction_url = 'http://34.101.239.167/order'
+    product_url = 'http://34.101.249.106/product'
+    user_url = 'http://34.101.249.106/pref'
+    interaction_url = 'http://34.101.249.106/order'
 
     # Retrieve data from the given URLs
     df_product = get_data(product_url, header)
