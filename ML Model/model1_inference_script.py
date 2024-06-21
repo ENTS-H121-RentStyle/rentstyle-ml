@@ -11,6 +11,7 @@ import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 import tensorflow as tf
 import requests
+import numpy as np
 
 # Function to load data
 def load_data(file_path):
@@ -95,7 +96,7 @@ def post_data(API, header, data):
     response = requests.post(API, headers=header, json=data)
     return response
 
-def recommend_products_n(user_id, df_user, df_product, model, API, header, n=150):
+def recommend_products_n(user_id, df_user, df_product, model, API, header, n=100):
     user_row = df_user[df_user['user_id'] == user_id].drop(columns=['user_id'])
     product_features = df_product.drop(columns=['product_id'])
 
@@ -109,8 +110,12 @@ def recommend_products_n(user_id, df_user, df_product, model, API, header, n=150
     product_ids = df_product['product_id']
     recommended_products = pd.DataFrame({'product_id': product_ids, 'similarity_value': max_indices})
 
-    recommended_products = recommended_products.sort_values(by='similarity_value', ascending=False)
-    recommended_list = recommended_products.head(n)['product_id'].values.tolist()
+    if user_id == 'default':
+        recommended_products = recommended_products.sample(frac=1).reset_index(drop=True)  # Shuffle the products
+        recommended_list = recommended_products.head(n)['product_id'].values.tolist()
+    else:
+        recommended_products = recommended_products.sort_values(by='similarity_value', ascending=False)
+        recommended_list = recommended_products.head(n)['product_id'].values.tolist()
 
     result = {
         'user_id': user_id,
@@ -122,7 +127,7 @@ def recommend_products_n(user_id, df_user, df_product, model, API, header, n=150
     return response.json()
 
 def main():
-    # Paths, feel free to change it
+    # Paths
     file_path = '/content/data_for_model1.xlsx'
 
     # Load and preprocess data
@@ -135,7 +140,7 @@ def main():
 
     df_user = preprocess_user_data(df_user, feature_columns)
 
-    # Load the model, feel free to change the path
+    # Load the model
     model = load_model('/content/model1.h5')
 
     header = {"Authorization": "Sudah izin pada Wildan dan Yoga"}
@@ -143,9 +148,8 @@ def main():
 
     # Iterate through each user and get recommendations
     for user_id in df_user['user_id']:
-        response = recommend_products_n(user_id, df_user, df_product, model, API, header, 30)
+        response = recommend_products_n(user_id, df_user, df_product, model, API, header, 100)
         print(f'Recommendation response for user {user_id}:', response)
 
 if __name__ == "__main__":
     main()
-
